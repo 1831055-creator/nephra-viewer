@@ -1,0 +1,25 @@
+{
+  "name": "Nephra — 腎機能の用量確認",
+  "short_name": "Nephra",
+  "description": "腎機能に応じた用量調節の確認（閲覧版・未確認ドラフトを含みます）",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#101b3a",
+  "theme_color": "#101b3a",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
