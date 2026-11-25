@@ -1011,6 +1011,28 @@
      state is introduced, and nothing outside the left
      column changes. Data, wording and the judgement logic
      are untouched; deleting the block reverts to item 49.
+  54. List opens with all records shown (2026-11-25,
+     owner-requested): the owner asked for the list to show
+     every record from the start instead of the representative
+     five plus a "show all" button press. One extra inline
+     classic script block just before the body end — entry
+     side only — applies the existing show-all mechanism
+     automatically: on DOMContentLoaded, after the view
+     script's own handler has created the toggle button and
+     rendered the featured five, the block clicks that button
+     once when it still offers "全件表示", so the list opens
+     with all records (105 ingredients / 159 records) and the
+     button then offers "代表5件" as before. The same block
+     wraps window.reset so that after the original reset runs
+     (which restores the featured-five state inside the view
+     script), the show-all state is re-applied and clearing
+     the conditions returns to the full list. Search input
+     already expanded the list in the view script and still
+     does; the quick-access chips of item 48 read the same
+     button state, so arming and clearing a chip composes
+     exactly as before. The data, the judgement logic, the
+     renderer and the files under assets/design/ are
+     untouched; deleting the script block reverts.
   Everything else — markup, inline CSS, base64 illustrations, and the data
   scripts — is byte-identical to ChatGPT's files. Pristine originals with
   their original relative paths are kept under assets/design/preview/
@@ -5518,6 +5540,51 @@ document.addEventListener('DOMContentLoaded',()=>{
   else init();
   window.addEventListener('load',function(){ wire(); measureBar(); });
   window.addEventListener('resize',measureBar);
+})();
+</script>
+<script>
+/* Item 54 — List opens with all records shown (2026-11-25,
+   entry-side only, owner-requested; header note 54). The
+   view script starts in its featured-five state and creates
+   a toggle button labelled "全件表示" that expands the list
+   to every record. This block applies that existing
+   mechanism automatically: its DOMContentLoaded handler is
+   registered after the view script's own, so when it runs
+   the button exists and the featured five are rendered;
+   it then clicks the button once, while it still offers
+   "全件表示", and the list re-renders with all records.
+   The button stays in place and afterwards offers "代表5件",
+   so the owner can still return to the five by hand.
+   window.reset is wrapped the same way: the original reset
+   restores the featured-five state inside the view script,
+   so the wrapper re-applies the show-all click right after
+   it, and clearing the search / filter conditions returns
+   to the full list instead of the five. Nothing else is
+   read or written — search, the metric filter, the
+   quick-access chips (which read this same button state),
+   the detail drawer, the CCr calculation and the judgement
+   logic all run through the view script exactly as before.
+   Deleting this block reverts to the featured-five start. */
+(function(){
+  function byId(id){ return document.getElementById(id); }
+  function showAllRows(){
+    var b=byId('show-all');
+    if(b && b.textContent==='全件表示') b.click();
+  }
+  function init(){
+    showAllRows();
+    if(typeof window.reset==='function' && !window.reset.__allDefault){
+      var origReset=window.reset;
+      var wrappedReset=function(){
+        origReset.apply(this,arguments);
+        showAllRows();
+      };
+      wrappedReset.__allDefault=true;
+      window.reset=wrappedReset;
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
 })();
 </script>
 
