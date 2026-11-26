@@ -1033,6 +1033,43 @@
      exactly as before. The data, the judgement logic, the
      renderer and the files under assets/design/ are
      untouched; deleting the script block reverts.
+  55. Confirmation work on the preview (2026-11-26,
+     owner-requested): the owner asked to do the
+     confirmation work from this preview itself. One
+     extra style block after item 48's and one extra
+     inline classic script block just before the body
+     end — entry side only — add the whole feature on
+     top of the existing display; the design original,
+     the renderer and the baked data scripts are
+     untouched, and like item 41 only the in-memory
+     status strings of the already-loaded objects are
+     set. The confirmation state lives in the browser's
+     localStorage under the key nephra-confirmed-v1, as
+     ingredient name -> {confirmed:true, date}. With no
+     stored value yet, 炭酸リチウム and ジゴキシン start
+     confirmed with the date 2026-11-15 — the same two
+     the item 41 sync displays as confirmed — and from
+     then on this block's state alone decides every
+     displayed status: each ingredient's status string
+     is set from the state before the first render and
+     again after every change, so the list status cell,
+     the detail tag and confirmation line, the
+     quick-access chip 未確認のみ (item 48, which reads
+     the same status) and the recently viewed list all
+     follow it from a single source. The detail drawer
+     gains a confirmation bar under its tag line —
+     確認済みにする, or 未確認に戻す together with the
+     confirmation date — re-injected after every detail
+     render; confirmed ingredients gain a small
+     確認済み badge in the list's name cell, re-applied
+     after every list render; and the quick-access
+     section gains a confirmation panel showing the
+     confirmed count and a button that downloads the
+     confirmed list as nephra-confirmed-export.json.
+     A short note beside both controls says the state
+     is stored on this device only. Deleting the two
+     blocks reverts to item 41's fixed two-ingredient
+     display.
   Everything else — markup, inline CSS, base64 illustrations, and the data
   scripts — is byte-identical to ChatGPT's files. Pristine originals with
   their original relative paths are kept under assets/design/preview/
@@ -3551,6 +3588,69 @@ html[data-design="abyss"][data-frame="f2"] .hero:after{
 </style>
 <style>
 /* ============================================================
+   Item 55 — Confirmation work on the preview (2026-11-26,
+   entry-side only, owner-requested; header note 55).
+   Companion styles for the script block of the same name
+   just before the body end: a small confirmed badge in
+   the list's name cell, in the same teal pill language as
+   the recently viewed status of item 48 but tuned for the
+   list's white rows; a quiet confirmation bar inside the
+   detail drawer, on the drawer's light frosted glass,
+   holding the state line, the confirm / unconfirm button
+   and the on-device note; and the confirmation panel the
+   script appends to the quick-access section — count,
+   export button and the same note — in the sidebar's
+   navy glass language, reusing its divider and sub
+   heading classes. Deleting this block and that block
+   reverts.
+   ============================================================ */
+.results td .cf-badge{
+ display:inline-block;margin-left:8px;vertical-align:2px;white-space:nowrap;
+ font-size:9.5px;font-weight:700;letter-spacing:.06em;line-height:1;
+ padding:3px 7px;border-radius:999px;
+ color:#0d6e60;border:1px solid rgba(31,122,110,.45);background:rgba(95,216,207,.16);
+}
+#detail .cf-bar{
+ display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+ margin:14px 0 4px;padding:11px 14px;border-radius:12px;
+ border:1px solid rgba(31,122,110,.28);
+ background:linear-gradient(180deg,rgba(240,253,250,.88),rgba(224,246,241,.78));
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
+}
+#detail .cf-state{font-size:12.5px;font-weight:700;letter-spacing:.02em;color:#435584}
+#detail .cf-state.is-confirmed{color:#0d6e60}
+#detail .cf-btn{
+ font-size:12px;font-weight:700;line-height:1.25;padding:7px 14px;
+ border-radius:999px;cursor:pointer;
+}
+#detail .cf-btn-do{
+ border:1px solid rgba(140,240,224,.75);color:#fff;
+ background:linear-gradient(120deg,rgba(31,122,110,.95),rgba(52,168,152,.95));
+ box-shadow:0 4px 12px rgba(31,122,110,.30),inset 0 1px 0 rgba(255,255,255,.28);
+}
+#detail .cf-btn-do:hover{filter:brightness(1.07)}
+#detail .cf-btn-undo{
+ border:1px solid rgba(90,110,160,.45);color:#435584;background:rgba(255,255,255,.65);
+ box-shadow:none;
+}
+#detail .cf-btn-undo:hover{background:rgba(255,255,255,.95)}
+#detail .cf-note{margin-left:auto;font-size:10.5px;color:#7186b5}
+.cf-count{margin:9px 2px 0;font-size:12px;font-weight:600;color:#dbe6ff}
+.cf-export{
+ margin-top:9px;width:100%;text-align:center;cursor:pointer;
+ border:1px solid rgba(160,215,255,.38);border-radius:999px;
+ background:rgba(255,255,255,.06);color:#dbe6ff;
+ padding:7px 11px;font-size:11.5px;font-weight:600;line-height:1.25;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+}
+.cf-export:hover{background:rgba(255,255,255,.14)}
+.cf-side-note{margin:8px 2px 2px;font-size:10.5px;line-height:1.55;color:#8fa5d4}
+@media(max-width:900px){
+ #detail .cf-note{margin-left:0;width:100%}
+}
+</style>
+<style>
+/* ============================================================
    Item 49 — Sidebar frames in the adopted frame-1 language
    (2026-11-23, entry-side only, owner-selected; header
    note 49). The owner compared four sidebar frame samples
@@ -5592,6 +5692,291 @@ document.addEventListener('DOMContentLoaded',()=>{
       };
       wrappedReset.__allDefault=true;
       window.reset=wrappedReset;
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
+</script>
+<script>
+/* Item 55 — Confirmation work on the preview (2026-11-26,
+   entry-side only, owner-requested; header note 55). The
+   owner asked to do the confirmation work from this
+   preview itself. This block adds the whole feature on
+   top of the existing display and is the single source
+   of every confirmation status shown:
+
+   State: the browser's localStorage, key
+   nephra-confirmed-v1, holding an object of ingredient
+   name -> {confirmed:true, date}. With no stored value
+   yet, the state starts as 炭酸リチウム and ジゴキシン
+   confirmed on 2026-11-15 — the same two ingredients
+   the item 41 sync displays as confirmed — and any
+   later change is written back in full, so unconfirming
+   one of the two stays unconfirmed. applyStatuses()
+   rewrites each loaded ingredient object's in-memory
+   status string from this state (確認済み（確認日 …）
+   when confirmed; an ingredient the state does not
+   confirm but whose status still reads confirmed —
+   item 41's fixed label — is returned to
+   未確認（ドラフト）). It runs at parse time, before
+   the view script's first render, and after every
+   change, so the list status cell, the detail tag and
+   confirmation line, the quick-access chip 未確認のみ
+   (item 48 reads the same status, so a locally
+   confirmed ingredient drops out of that filter) and
+   the recently viewed list all follow this one state.
+
+   Detail: a mutation observer on the drawer re-injects
+   a confirmation bar under the tag line after every
+   detail render — 未確認 with a 確認済みにする button,
+   or 確認済み（確認日 …） with a 未確認に戻す button —
+   plus a short note that the state is stored on this
+   device only. Toggling writes the state (the date is
+   the day of the tap), re-applies the statuses and
+   re-renders list and detail through the view script's
+   own globals.
+
+   List: a mutation observer on the rows re-applies a
+   small 確認済み badge in the name cell of every
+   confirmed ingredient after every render.
+
+   Sidebar: a confirmation panel is appended to the
+   quick-access section (item 48) with the current
+   confirmed count and a 確認済みリストを書き出す
+   button that downloads the confirmed ingredients and
+   their dates as nephra-confirmed-export.json, built
+   in the browser; the same on-device note sits under
+   it. Where localStorage is unavailable the feature
+   still works for the session from the in-memory
+   state. The design original, the renderer, the baked
+   data scripts and the judgement logic are untouched;
+   deleting this block and the companion style block
+   reverts to item 41's fixed display. */
+(function(){
+  var KEY='nephra-confirmed-v1';
+  var SEED={'炭酸リチウム':'2026-11-15','ジゴキシン':'2026-11-15'};
+  var UNCONFIRMED_LABEL='未確認（ドラフト）';
+
+  function byId(id){ return document.getElementById(id); }
+  function drugs(){
+    var raw=window.NEPHRA_CHUNKS||[];
+    var out=[];
+    for(var i=0;i<raw.length;i++){
+      var d=raw[i];
+      if(d && d.ingredientGroup && Array.isArray(d.records)) out.push(d);
+    }
+    return out;
+  }
+  function loadState(){
+    var raw=null;
+    try{ raw=window.localStorage.getItem(KEY); }catch(e){ raw=null; }
+    if(raw===null || raw===undefined){
+      var s={};
+      for(var k in SEED){
+        if(Object.prototype.hasOwnProperty.call(SEED,k)) s[k]={confirmed:true,date:SEED[k]};
+      }
+      return s;
+    }
+    try{
+      var p=JSON.parse(raw);
+      if(p && typeof p==='object' && !Array.isArray(p)) return p;
+    }catch(e){}
+    return {};
+  }
+  var state=loadState();
+  function save(){
+    try{ window.localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){}
+  }
+  function isConf(name){ var e=state[name]; return !!(e && e.confirmed); }
+  function confDate(name){ var e=state[name]; return (e && e.date) ? String(e.date) : ''; }
+  function confirmedCount(){
+    var n=0;
+    for(var k in state){
+      if(Object.prototype.hasOwnProperty.call(state,k) && state[k] && state[k].confirmed) n++;
+    }
+    return n;
+  }
+  function todayStr(){
+    var t=new Date();
+    function p2(n){ return (n<10 ? '0' : '')+n; }
+    return t.getFullYear()+'-'+p2(t.getMonth()+1)+'-'+p2(t.getDate());
+  }
+  function applyStatuses(){
+    var list=drugs();
+    for(var i=0;i<list.length;i++){
+      var d=list[i], name=d.ingredientGroup;
+      if(isConf(name)) d.status='確認済み（確認日 '+confDate(name)+'）';
+      else if(String(d.status||'').indexOf('確認済み')===0) d.status=UNCONFIRMED_LABEL;
+    }
+  }
+  applyStatuses();
+
+  /* --- list badges --- */
+  function paintBadges(){
+    var links=document.querySelectorAll('#rows a[data-open]');
+    if(!links.length) return;
+    var list=drugs();
+    for(var i=0;i<links.length;i++){
+      var a=links[i];
+      var d=list[Number(a.getAttribute('data-open'))];
+      if(!d) continue;
+      var td=(a.closest) ? a.closest('td') : a.parentNode;
+      if(!td) continue;
+      var badge=td.querySelector('.cf-badge');
+      if(isConf(d.ingredientGroup)){
+        if(!badge){
+          badge=document.createElement('span');
+          badge.className='cf-badge';
+          badge.textContent='確認済み';
+          td.appendChild(badge);
+        }
+      } else if(badge && badge.parentNode){
+        badge.parentNode.removeChild(badge);
+      }
+    }
+  }
+
+  /* --- detail confirmation bar --- */
+  function paintDetailBar(){
+    var det=byId('detail');
+    if(!det || !det.classList.contains('visible')) return;
+    var h2=det.querySelector('h2');
+    if(!h2) return;
+    /* The ingredient name is the heading's own text node only:
+       the brand augmentation appends a （商品名） span to the
+       same heading, and its text must not leak into the name
+       the state is keyed by. */
+    var name='';
+    for(var i=0;i<h2.childNodes.length;i++){
+      if(h2.childNodes[i].nodeType===3) name+=h2.childNodes[i].nodeValue;
+    }
+    name=name.replace(/^\s+|\s+$/g,'');
+    if(!name){
+      var full=h2.textContent.replace(/^\s+|\s+$/g,'');
+      var list=drugs();
+      for(var j=0;j<list.length;j++){
+        if(full.indexOf(list[j].ingredientGroup)===0){ name=list[j].ingredientGroup; break; }
+      }
+    }
+    if(!name) return;
+    var sig=name+'|'+(isConf(name) ? '1:'+confDate(name) : '0');
+    var bar=det.querySelector('.cf-bar');
+    if(bar && bar.getAttribute('data-cf')===sig) return;
+    if(!bar){
+      bar=document.createElement('div');
+      bar.className='cf-bar';
+      var tag=det.querySelector('.detail-tag');
+      if(tag && tag.parentNode) tag.parentNode.insertBefore(bar,tag.nextSibling);
+      else if(h2.parentNode) h2.parentNode.insertBefore(bar,h2.nextSibling);
+      else det.appendChild(bar);
+    }
+    bar.setAttribute('data-cf',sig);
+    bar.innerHTML='';
+    var st=document.createElement('span');
+    if(isConf(name)){
+      st.className='cf-state is-confirmed';
+      st.textContent='確認済み（確認日 '+confDate(name)+'）';
+    } else {
+      st.className='cf-state';
+      st.textContent='未確認';
+    }
+    bar.appendChild(st);
+    var btn=document.createElement('button');
+    btn.type='button';
+    if(isConf(name)){
+      btn.className='cf-btn cf-btn-undo';
+      btn.textContent='未確認に戻す';
+      btn.addEventListener('click',function(){ setConfirmed(name,false); });
+    } else {
+      btn.className='cf-btn cf-btn-do';
+      btn.textContent='確認済みにする';
+      btn.addEventListener('click',function(){ setConfirmed(name,true); });
+    }
+    bar.appendChild(btn);
+    var note=document.createElement('span');
+    note.className='cf-note';
+    note.textContent='確認状態はこの端末にのみ保存されます';
+    bar.appendChild(note);
+  }
+
+  /* --- sidebar panel: count + export --- */
+  function paintCount(){
+    var el=byId('cf-count');
+    if(!el) return;
+    el.textContent='確認済み '+confirmedCount()+'件 / 全'+drugs().length+'成分';
+  }
+  function doExport(){
+    var out={};
+    var list=drugs();
+    for(var i=0;i<list.length;i++){
+      var name=list[i].ingredientGroup;
+      if(isConf(name)) out[name]={confirmed:true,date:confDate(name)};
+    }
+    for(var k in state){
+      if(Object.prototype.hasOwnProperty.call(state,k) && state[k] && state[k].confirmed
+         && !Object.prototype.hasOwnProperty.call(out,k)){
+        out[k]={confirmed:true,date:state[k].date ? String(state[k].date) : ''};
+      }
+    }
+    var blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;
+    a.download='nephra-confirmed-export.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){
+      try{ URL.revokeObjectURL(url); }catch(e){}
+      if(a.parentNode) a.parentNode.removeChild(a);
+    },500);
+  }
+  function buildPanel(){
+    var qa=byId('quick-access');
+    if(!qa || byId('cf-panel')) return;
+    var sec=document.createElement('div');
+    sec.className='cf-panel';
+    sec.id='cf-panel';
+    sec.innerHTML='<hr class="qa-divider">'
+      +'<h3 class="qa-sub">確認作業<small>CONFIRMATION</small></h3>'
+      +'<p class="cf-count" id="cf-count"></p>'
+      +'<button type="button" class="cf-export" id="cf-export">確認済みリストを書き出す</button>'
+      +'<p class="cf-side-note">確認状態はこの端末にのみ保存されます</p>';
+    qa.appendChild(sec);
+    var ex=byId('cf-export');
+    if(ex) ex.addEventListener('click',doExport);
+    paintCount();
+  }
+
+  function refreshViews(){
+    if(typeof window.render==='function') window.render();
+    var det=byId('detail');
+    if(det && det.classList.contains('visible') && typeof window.update==='function') window.update();
+    paintBadges();
+    paintDetailBar();
+    paintCount();
+  }
+  function setConfirmed(name,on){
+    if(on) state[name]={confirmed:true,date:todayStr()};
+    else delete state[name];
+    save();
+    applyStatuses();
+    refreshViews();
+  }
+
+  function init(){
+    buildPanel();
+    paintBadges();
+    paintDetailBar();
+    var rows=byId('rows');
+    if(rows && window.MutationObserver && !rows.__cfObserved){
+      rows.__cfObserved=true;
+      new MutationObserver(function(){ paintBadges(); }).observe(rows,{childList:true});
+    }
+    var det=byId('detail');
+    if(det && window.MutationObserver && !det.__cfObserved){
+      det.__cfObserved=true;
+      new MutationObserver(function(){ paintDetailBar(); }).observe(det,{childList:true,attributes:true,attributeFilter:['class']});
     }
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
